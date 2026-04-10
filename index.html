@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>為我挑一個水晶 ✧ 點亮最美的你</title>
+<meta name="description" content="抽一張水晶牌卡，接收屬於你的正向訊息。點亮最美的你 Let your light shine ✧ @info2fate">
+<meta property="og:title" content="為我挑一個水晶 ✧ 點亮最美的你">
+<meta property="og:description" content="抽一張水晶牌卡，接收屬於你的正向訊息。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://info2fate.github.io/crystal-card/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✧</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:'Noto Serif TC','Noto Sans TC',serif;
+  background:linear-gradient(180deg,#fef9f4 0%,#fdf2e9 30%,#fce8dc 60%,#fdf2e9 100%);
+  display:flex;flex-direction:column;align-items:center;
+  position:relative;min-height:100vh;
+}
+
+/* Particles */
+.particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.particle{position:absolute;border-radius:50%;animation:floatUp var(--dur) ease-in-out var(--delay) infinite}
+
+/* Animations */
+@keyframes floatUp{0%,100%{transform:translateY(0) scale(1);opacity:.2}50%{transform:translateY(-30px) scale(1.3);opacity:.5}}
+@keyframes shimmer{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
+@keyframes cardIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes cardShuffle{0%{transform:scale(.8) rotateY(180deg);opacity:0}60%{transform:scale(1.05) rotateY(0);opacity:1}100%{transform:scale(1) rotateY(0);opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes cardReveal{0%{transform:scale(.3) rotateY(90deg);opacity:0}50%{transform:scale(1.08) rotateY(0);opacity:1}100%{transform:scale(1) rotateY(0);opacity:1}}
+@keyframes gentlePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes titleFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes sparkleIn{from{opacity:0;transform:scale(0) rotate(-30deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes igGlow{0%,100%{box-shadow:0 0 8px rgba(212,165,116,.15)}50%{box-shadow:0 0 18px rgba(212,165,116,.35)}}
+
+/* Header */
+.header{position:relative;z-index:1;text-align:center;padding:50px 24px 10px;width:100%;max-width:420px}
+.sparkles{display:flex;justify-content:center;gap:14px;margin-bottom:14px}
+.sparkle-icon{color:#d4a574;opacity:.6}
+.sparkle-icon:nth-child(1){animation:sparkleIn .5s ease .2s both,gentlePulse 2s ease-in-out 0s infinite;width:12px;height:12px}
+.sparkle-icon:nth-child(2){animation:sparkleIn .5s ease .35s both,gentlePulse 2s ease-in-out .4s infinite;width:18px;height:18px}
+.sparkle-icon:nth-child(3){animation:sparkleIn .5s ease .5s both,gentlePulse 2s ease-in-out .8s infinite;width:12px;height:12px}
+h1{font-size:24px;font-weight:700;color:#7a5c3e;letter-spacing:4px;animation:titleFloat 4s ease-in-out infinite;margin-bottom:6px}
+.subtitle{font-size:12px;color:#b8956e;letter-spacing:2px}
+
+/* Promo banner */
+.promo{position:relative;z-index:1;text-align:center;margin:14px 0 4px;width:100%;max-width:360px;padding:0 20px}
+.promo-inner{background:linear-gradient(135deg,rgba(212,165,116,.08) 0%,rgba(232,180,200,.1) 100%);border:1px solid rgba(212,165,116,.2);border-radius:16px;padding:14px 20px}
+.promo-title{font-size:16px;font-weight:700;color:#9b734a;letter-spacing:3px;margin-bottom:4px}
+.promo-sub{font-size:12px;color:#b8956e;letter-spacing:1px;font-style:italic}
+
+/* Pick hint */
+.pick-hint{position:relative;z-index:1;text-align:center;margin:16px 0 14px}
+.pick-badge{display:inline-block;padding:7px 22px;border-radius:50px;background:rgba(212,165,116,.12);border:1px solid rgba(212,165,116,.25);color:#9b734a;font-size:13px;letter-spacing:3px;font-weight:500}
+
+/* Card grid */
+.card-area{position:relative;z-index:1;width:100%;max-width:360px;padding:0 24px}
+.card-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+
+/* Card back */
+.card-back{
+  width:calc((100% - 24px)/3);aspect-ratio:2/3;border-radius:16px;
+  border:1.5px solid rgba(212,165,116,.4);cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  box-shadow:0 2px 12px rgba(212,165,116,.15);
+}
+.card-back .shimmer-layer{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,.3) 50%,transparent 70%);
+}
+.card-back .inner-border{
+  position:absolute;inset:7px;border:1px solid rgba(212,165,116,.2);
+  border-radius:10px;pointer-events:none;
+}
+.card-back .card-label{font-size:10px;color:#c9956a;letter-spacing:3px;font-weight:500;position:relative;z-index:1}
+.card-back .card-sparkle{position:relative;z-index:1;margin-bottom:6px;color:#c9956a;opacity:.5}
+
+/* Overlay */
+.overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);animation:fadeIn .3s ease}
+.overlay.hidden{display:none}
+
+/* Revealed card */
+.revealed-card{
+  width:min(320px,85vw);border-radius:24px;
+  border:2px solid rgba(212,165,116,.5);
+  box-shadow:0 20px 60px rgba(0,0,0,.25),0 0 40px rgba(212,165,116,.15);
+  overflow:hidden;animation:cardReveal .7s cubic-bezier(.34,1.56,.64,1);position:relative;
+}
+.revealed-card .shine{position:absolute;inset:0;background:linear-gradient(135deg,transparent 20%,rgba(255,255,255,.2) 45%,transparent 55%);pointer-events:none}
+.revealed-card .frame{position:absolute;inset:12px;border-radius:14px;pointer-events:none}
+.revealed-card .content{position:relative;z-index:1;padding:36px 26px 32px;text-align:center}
+.revealed-card .tag{font-size:10px;letter-spacing:4px;margin-bottom:14px}
+.revealed-card .icon-circle{
+  display:inline-flex;width:66px;height:66px;border-radius:50%;
+  align-items:center;justify-content:center;margin-bottom:18px;
+  animation:gentlePulse 2s ease-in-out infinite;
+}
+.revealed-card .icon-circle span{font-size:30px}
+.revealed-card .crystal-name{font-size:26px;font-weight:700;letter-spacing:4px;margin-bottom:6px}
+.revealed-card .crystal-keyword{font-size:13px;letter-spacing:3px;margin-bottom:20px}
+.revealed-card .divider{width:36px;height:1px;margin:0 auto 20px}
+.revealed-card .crystal-text{font-size:14.5px;line-height:1.9;letter-spacing:.5px}
+.revealed-card .btn-close{
+  margin-top:28px;padding:11px 26px;border-radius:50px;
+  font-size:13px;font-weight:500;cursor:pointer;letter-spacing:2px;
+  font-family:'Noto Serif TC',serif;
+}
+
+/* Footer */
+.footer{position:relative;z-index:1;text-align:center;margin-top:auto;padding:36px 0 28px;width:100%}
+.footer-line{width:40px;height:1px;background:rgba(212,165,116,.3);margin:0 auto 18px}
+.ig-link{
+  display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:50px;
+  background:linear-gradient(135deg,rgba(212,165,116,.1) 0%,rgba(232,180,200,.12) 100%);
+  border:1px solid rgba(212,165,116,.25);text-decoration:none;color:#9b734a;
+  animation:igGlow 3s ease-in-out infinite;
+}
+.ig-link span{font-size:13px;font-weight:500;letter-spacing:1px;font-family:'Noto Serif TC',serif}
+.footer-tag{margin-top:10px;font-size:11px;color:#c9a87c;letter-spacing:1px;opacity:.7}
+</style>
+</head>
+<body>
+
+<!-- Floating Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Header -->
+<div class="header">
+  <div class="sparkles">
+    <svg class="sparkle-icon" viewBox="0 0 12 12"><path d="M6 0L7.2 4.8L12 6L7.2 7.2L6 12L4.8 7.2L0 6L4.8 4.8Z" fill="currentColor"/></svg>
+    <svg class="sparkle-icon" viewBox="0 0 12 12"><path d="M6 0L7.2 4.8L12 6L7.2 7.2L6 12L4.8 7.2L0 6L4.8 4.8Z" fill="currentColor"/></svg>
+    <svg class="sparkle-icon" viewBox="0 0 12 12"><path d="M6 0L7.2 4.8L12 6L7.2 7.2L6 12L4.8 7.2L0 6L4.8 4.8Z" fill="currentColor"/></svg>
+  </div>
+  <h1>為我挑一個水晶</h1>
+  <p class="subtitle">屬於你的水晶訊息</p>
+</div>
+
+<!-- Promo -->
+<div class="promo">
+  <div class="promo-inner">
+    <div class="promo-title">✧ 點亮最美的你 ✧</div>
+    <div class="promo-sub">Let your light shine</div>
+  </div>
+</div>
+
+<!-- Pick hint -->
+<div class="pick-hint">
+  <span class="pick-badge">✧ 挑選一張 ✧</span>
+</div>
+
+<!-- Card grid -->
+<div class="card-area">
+  <div class="card-grid" id="cardGrid"></div>
+</div>
+
+<!-- Overlay -->
+<div class="overlay hidden" id="overlay" onclick="closeCard()">
+  <div class="revealed-card" id="revealedCard" onclick="event.stopPropagation()"></div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <div class="footer-line"></div>
+  <a class="ig-link" href="https://www.instagram.com/info2fate" target="_blank" rel="noopener noreferrer">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9b734a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+      <circle cx="12" cy="12" r="5"/>
+      <circle cx="17.5" cy="6.5" r="1.5" fill="#9b734a" stroke="none"/>
+    </svg>
+    <span>@info2fate</span>
+  </a>
+  <div class="footer-tag">點亮最美的你 ｜ Let your light shine</div>
+</div>
+
+<script>
+const CRYSTALS=[
+{name:"白水晶",keyword:"清晰 · 淨化",text:"當思緒紛亂時，給自己一段安靜的時光。白水晶提醒你：清空雜念，答案自然浮現。",emoji:"◇",gradient:"linear-gradient(135deg,#fdfbfb 0%,#ebedee 100%)"},
+{name:"白水晶",keyword:"專注 · 目標",text:"把注意力放在真正重要的事情上，像白水晶一樣純粹透明，讓目標清晰可見。",emoji:"◇",gradient:"linear-gradient(135deg,#fdfbfb 0%,#ebedee 100%)"},
+{name:"白水晶",keyword:"能量 · 放大",text:"你的每一個正向念頭都值得被放大。白水晶陪你把微小的善意化為巨大的力量。",emoji:"◇",gradient:"linear-gradient(135deg,#fdfbfb 0%,#ebedee 100%)"},
+{name:"白水晶",keyword:"初心 · 純粹",text:"不管走了多遠，都別忘了出發時的心意。白水晶守護你最初的夢想。",emoji:"◇",gradient:"linear-gradient(135deg,#fdfbfb 0%,#ebedee 100%)"},
+{name:"紫水晶",keyword:"智慧 · 直覺",text:"相信你內在的聲音，它比你想像的更有智慧。紫水晶點亮你心中的明燈。",emoji:"♦",gradient:"linear-gradient(135deg,#e8d5f5 0%,#c9a7e4 100%)"},
+{name:"紫水晶",keyword:"平靜 · 轉化",text:"在風暴中找到你的寧靜中心。紫水晶幫助你將焦慮轉化為平和的力量。",emoji:"♦",gradient:"linear-gradient(135deg,#e8d5f5 0%,#c9a7e4 100%)"},
+{name:"紫水晶",keyword:"覺察 · 靈感",text:"靈感不會憑空出現，它來自對生活的細膩觀察。讓紫水晶開啟你的覺察之眼。",emoji:"♦",gradient:"linear-gradient(135deg,#e8d5f5 0%,#c9a7e4 100%)"},
+{name:"紫水晶",keyword:"冥想 · 沉澱",text:"每天給自己五分鐘的沉默，讓心沉澱下來，答案就藏在安靜裡。",emoji:"♦",gradient:"linear-gradient(135deg,#e8d5f5 0%,#c9a7e4 100%)"},
+{name:"粉晶",keyword:"愛 · 溫柔",text:"對自己溫柔一點，你值得被好好愛著。粉晶提醒你：愛，從自己開始。",emoji:"♥",gradient:"linear-gradient(135deg,#fce4ec 0%,#f8bbd0 100%)"},
+{name:"粉晶",keyword:"療癒 · 包容",text:"受過的傷會成為你溫柔的來源。粉晶陪你療癒，讓心重新柔軟。",emoji:"♥",gradient:"linear-gradient(135deg,#fce4ec 0%,#f8bbd0 100%)"},
+{name:"粉晶",keyword:"人際 · 吸引",text:"真誠的微笑是最好的名片。帶著粉晶的能量，把美好的人吸引到身邊。",emoji:"♥",gradient:"linear-gradient(135deg,#fce4ec 0%,#f8bbd0 100%)"},
+{name:"粉晶",keyword:"自愛 · 接納",text:"你不需要完美才值得被愛。接納自己的全部，就是最好的開始。",emoji:"♥",gradient:"linear-gradient(135deg,#fce4ec 0%,#f8bbd0 100%)"},
+{name:"粉晶",keyword:"感恩 · 珍惜",text:"每一段關係都是禮物。用感恩的心珍惜身邊的每一個人。",emoji:"♥",gradient:"linear-gradient(135deg,#fce4ec 0%,#f8bbd0 100%)"},
+{name:"黃水晶",keyword:"財富 · 豐盛",text:"豐盛不只是金錢，更是一種富足的心態。黃水晶祝福你內外皆富有。",emoji:"✦",gradient:"linear-gradient(135deg,#fff8e1 0%,#ffe082 100%)"},
+{name:"黃水晶",keyword:"自信 · 光芒",text:"你天生就有發光的能力，不要害怕展現自己。黃水晶為你注入自信的光芒。",emoji:"✦",gradient:"linear-gradient(135deg,#fff8e1 0%,#ffe082 100%)"},
+{name:"黃水晶",keyword:"樂觀 · 喜悅",text:"選擇用陽光的角度看世界，生活就會回報你更多的喜悅。",emoji:"✦",gradient:"linear-gradient(135deg,#fff8e1 0%,#ffe082 100%)"},
+{name:"黃水晶",keyword:"創造 · 行動",text:"想法再好也需要行動來實現。黃水晶給你動力，把夢想變成現實。",emoji:"✦",gradient:"linear-gradient(135deg,#fff8e1 0%,#ffe082 100%)"},
+{name:"黃水晶",keyword:"機會 · 勇氣",text:"機會只留給準備好的人。帶著勇氣向前走，好運正在路上。",emoji:"✦",gradient:"linear-gradient(135deg,#fff8e1 0%,#ffe082 100%)"},
+{name:"黑曜石",keyword:"保護 · 勇氣",text:"面對黑暗不需要害怕，因為你比你想像的更強大。黑曜石是你的守護盾牌。",emoji:"●",gradient:"linear-gradient(135deg,#37474f 0%,#263238 100%)"},
+{name:"黑曜石",keyword:"接地 · 穩定",text:"雙腳踏實地站在大地上，任何風雨都無法動搖你。",emoji:"●",gradient:"linear-gradient(135deg,#37474f 0%,#263238 100%)"},
+{name:"黑曜石",keyword:"釋放 · 斷捨離",text:"放下不再適合你的一切。黑曜石幫你切斷負面的能量連結，迎向新的篇章。",emoji:"●",gradient:"linear-gradient(135deg,#37474f 0%,#263238 100%)"},
+{name:"黑曜石",keyword:"真相 · 面對",text:"勇敢面對真實的自己，不逃避，不偽裝。真相是成長的起點。",emoji:"●",gradient:"linear-gradient(135deg,#37474f 0%,#263238 100%)"},
+{name:"月光石",keyword:"直覺 · 流動",text:"像月亮一樣，有圓有缺都是美。月光石教你接受生命的自然節奏。",emoji:"☽",gradient:"linear-gradient(135deg,#e8eaf6 0%,#c5cae9 100%)"},
+{name:"月光石",keyword:"新開始 · 希望",text:"每一個月圓都是新的起點。月光石帶來希望，提醒你永遠可以重新出發。",emoji:"☽",gradient:"linear-gradient(135deg,#e8eaf6 0%,#c5cae9 100%)"},
+{name:"月光石",keyword:"柔韌 · 適應",text:"水的力量在於柔軟卻不停歇。學會像水一樣，溫柔且堅定。",emoji:"☽",gradient:"linear-gradient(135deg,#e8eaf6 0%,#c5cae9 100%)"},
+{name:"月光石",keyword:"夢想 · 想像",text:"在月光下許個願吧。讓想像力帶你去到任何想去的地方。",emoji:"☽",gradient:"linear-gradient(135deg,#e8eaf6 0%,#c5cae9 100%)"},
+{name:"虎眼石",keyword:"決斷 · 行動",text:"猶豫不決只會浪費時間。虎眼石賦予你果斷的力量，勇敢做出選擇。",emoji:"◈",gradient:"linear-gradient(135deg,#e8d5b7 0%,#c4a265 100%)"},
+{name:"虎眼石",keyword:"勇氣 · 意志",text:"像老虎一樣專注而堅定。你的意志力比你以為的更強大。",emoji:"◈",gradient:"linear-gradient(135deg,#e8d5b7 0%,#c4a265 100%)"},
+{name:"虎眼石",keyword:"洞察 · 判斷",text:"看清事物的本質，才能做出最好的判斷。虎眼石是你的智慧之眼。",emoji:"◈",gradient:"linear-gradient(135deg,#e8d5b7 0%,#c4a265 100%)"},
+{name:"虎眼石",keyword:"堅持 · 毅力",text:"成功的祕密很簡單——再多堅持一下。虎眼石陪你走過每一段艱難。",emoji:"◈",gradient:"linear-gradient(135deg,#e8d5b7 0%,#c4a265 100%)"},
+{name:"螢石",keyword:"專注 · 學習",text:"學習是一輩子的事。螢石幫你集中注意力，讓知識成為你最好的武器。",emoji:"⬡",gradient:"linear-gradient(135deg,#e0f7fa 0%,#80deea 100%)"},
+{name:"螢石",keyword:"清晰 · 思考",text:"混亂的思緒需要整理。螢石像一把梳子，幫你理清每一個想法。",emoji:"⬡",gradient:"linear-gradient(135deg,#e0f7fa 0%,#80deea 100%)"},
+{name:"螢石",keyword:"創意 · 突破",text:"跳出框架思考，你會發現無限的可能。螢石激發你的創意火花。",emoji:"⬡",gradient:"linear-gradient(135deg,#e0f7fa 0%,#80deea 100%)"},
+{name:"螢石",keyword:"組織 · 效率",text:"好的規劃是成功的一半。讓螢石幫你把生活安排得井井有條。",emoji:"⬡",gradient:"linear-gradient(135deg,#e0f7fa 0%,#80deea 100%)"},
+{name:"拉長石",keyword:"轉變 · 魔法",text:"生命中的每一次改變都是一場魔法。拉長石陪你在轉變中發現新的自己。",emoji:"✧",gradient:"linear-gradient(135deg,#cfd8dc 0%,#90a4ae 100%)"},
+{name:"拉長石",keyword:"命運 · 際遇",text:"每一次看似偶然的相遇，都是命運最好的安排。",emoji:"✧",gradient:"linear-gradient(135deg,#cfd8dc 0%,#90a4ae 100%)"},
+{name:"拉長石",keyword:"潛能 · 發現",text:"你身上有著連自己都不知道的才華。拉長石幫你點亮那些隱藏的光芒。",emoji:"✧",gradient:"linear-gradient(135deg,#cfd8dc 0%,#90a4ae 100%)"},
+{name:"拉長石",keyword:"神秘 · 探索",text:"保持對世界的好奇心，生活永遠充滿驚喜。",emoji:"✧",gradient:"linear-gradient(135deg,#cfd8dc 0%,#90a4ae 100%)"},
+{name:"綠幽靈",keyword:"事業 · 成長",text:"每一次努力都在為未來鋪路。綠幽靈祝福你的事業蒸蒸日上。",emoji:"❖",gradient:"linear-gradient(135deg,#e8f5e9 0%,#a5d6a7 100%)"},
+{name:"綠幽靈",keyword:"正財 · 累積",text:"財富是一步一腳印累積出來的。穩紮穩打，收穫終將到來。",emoji:"❖",gradient:"linear-gradient(135deg,#e8f5e9 0%,#a5d6a7 100%)"},
+{name:"綠幽靈",keyword:"機緣 · 貴人",text:"保持善良和感恩，貴人自然會出現在你的生命中。",emoji:"❖",gradient:"linear-gradient(135deg,#e8f5e9 0%,#a5d6a7 100%)"},
+{name:"綠幽靈",keyword:"豐收 · 耐心",text:"播下的種子需要時間發芽。耐心等待，豐收的季節就在前方。",emoji:"❖",gradient:"linear-gradient(135deg,#e8f5e9 0%,#a5d6a7 100%)"},
+{name:"石榴石",keyword:"熱情 · 活力",text:"帶著滿滿的熱情面對每一天，生活會因你的活力而精彩。",emoji:"◆",gradient:"linear-gradient(135deg,#fce4ec 0%,#e57373 100%)"},
+{name:"石榴石",keyword:"承諾 · 忠誠",text:"對自己許下的承諾要好好兌現。石榴石提醒你：忠於自己的心。",emoji:"◆",gradient:"linear-gradient(135deg,#fce4ec 0%,#e57373 100%)"},
+{name:"石榴石",keyword:"重生 · 蛻變",text:"每一次跌倒都是蛻變的開始。像鳳凰一樣，從灰燼中重生。",emoji:"◆",gradient:"linear-gradient(135deg,#fce4ec 0%,#e57373 100%)"},
+{name:"石榴石",keyword:"勤奮 · 收穫",text:"天道酬勤。你付出的每一分努力，都會在某一天得到回報。",emoji:"◆",gradient:"linear-gradient(135deg,#fce4ec 0%,#e57373 100%)"},
+{name:"海藍寶",keyword:"溝通 · 表達",text:"勇敢說出你的想法。海藍寶幫你找到最真誠的表達方式。",emoji:"◇",gradient:"linear-gradient(135deg,#e0f2f1 0%,#80cbc4 100%)"},
+{name:"海藍寶",keyword:"平靜 · 釋懷",text:"像大海一樣寬闊，讓所有的煩惱隨波而去。",emoji:"◇",gradient:"linear-gradient(135deg,#e0f2f1 0%,#80cbc4 100%)"},
+{name:"海藍寶",keyword:"旅行 · 自由",text:"世界那麼大，值得你去看看。帶著海藍寶的祝福，勇敢出發。",emoji:"◇",gradient:"linear-gradient(135deg,#e0f2f1 0%,#80cbc4 100%)"},
+{name:"海藍寶",keyword:"勇敢 · 真實",text:"做真實的自己，不必為了迎合誰而改變。真實，就是最大的勇敢。",emoji:"◇",gradient:"linear-gradient(135deg,#e0f2f1 0%,#80cbc4 100%)"},
+{name:"碧璽",keyword:"平衡 · 和諧",text:"生活需要平衡，工作與休息同等重要。碧璽幫你找到和諧的節奏。",emoji:"◈",gradient:"linear-gradient(135deg,#f3e5f5 0%,#ce93d8 100%)"},
+{name:"碧璽",keyword:"多彩 · 包容",text:"每個人都是獨一無二的色彩。像碧璽一樣，擁抱生命的多元美麗。",emoji:"◈",gradient:"linear-gradient(135deg,#f3e5f5 0%,#ce93d8 100%)"},
+{name:"碧璽",keyword:"淨化 · 更新",text:"定期清理心靈的灰塵，讓正能量重新流動。碧璽為你帶來煥然一新的感覺。",emoji:"◈",gradient:"linear-gradient(135deg,#f3e5f5 0%,#ce93d8 100%)"},
+{name:"碧璽",keyword:"守護 · 安心",text:"你值得被好好守護。碧璽在你身邊，給你滿滿的安全感。",emoji:"◈",gradient:"linear-gradient(135deg,#f3e5f5 0%,#ce93d8 100%)"},
+{name:"青金石",keyword:"真理 · 覺醒",text:"追尋真理的路上或許孤獨，但你走的每一步都充滿意義。",emoji:"◆",gradient:"linear-gradient(135deg,#e3f2fd 0%,#5c6bc0 100%)"},
+{name:"青金石",keyword:"表達 · 智慧",text:"用智慧的話語傳遞你的想法。青金石讓你的每句話都有力量。",emoji:"◆",gradient:"linear-gradient(135deg,#e3f2fd 0%,#5c6bc0 100%)"},
+{name:"青金石",keyword:"尊嚴 · 自重",text:"尊重自己，是一切被尊重的開始。你值得最好的對待。",emoji:"◆",gradient:"linear-gradient(135deg,#e3f2fd 0%,#5c6bc0 100%)"},
+{name:"青金石",keyword:"內在 · 力量",text:"真正的力量不在外表，而在你的內心深處。",emoji:"◆",gradient:"linear-gradient(135deg,#e3f2fd 0%,#5c6bc0 100%)"},
+{name:"煙晶",keyword:"落地 · 實際",text:"夢想需要腳踏實地去實現。煙晶幫你把理想轉化為具體的行動。",emoji:"◇",gradient:"linear-gradient(135deg,#efebe9 0%,#a1887f 100%)"},
+{name:"煙晶",keyword:"釋壓 · 放鬆",text:"壓力不是敵人，但你需要學會和它共處。給自己一個深呼吸的空間。",emoji:"◇",gradient:"linear-gradient(135deg,#efebe9 0%,#a1887f 100%)"},
+{name:"煙晶",keyword:"耐力 · 堅韌",text:"路雖遠，行則必至。煙晶給你持續走下去的力量。",emoji:"◇",gradient:"linear-gradient(135deg,#efebe9 0%,#a1887f 100%)"},
+{name:"煙晶",keyword:"沉穩 · 安定",text:"在變化不停的世界中，做自己最安穩的靠山。",emoji:"◇",gradient:"linear-gradient(135deg,#efebe9 0%,#a1887f 100%)"},
+{name:"橄欖石",keyword:"希望 · 光明",text:"即使在最黑暗的夜晚，也要相信黎明即將到來。橄欖石是你的希望之光。",emoji:"✦",gradient:"linear-gradient(135deg,#f1f8e9 0%,#aed581 100%)"},
+{name:"橄欖石",keyword:"幸福 · 知足",text:"幸福不在遠方，就在你每一天用心生活的當下。",emoji:"✦",gradient:"linear-gradient(135deg,#f1f8e9 0%,#aed581 100%)"},
+{name:"橄欖石",keyword:"成長 · 蛻變",text:"成長有時會痛，但每一次疼痛都讓你更接近最好的自己。",emoji:"✦",gradient:"linear-gradient(135deg,#f1f8e9 0%,#aed581 100%)"},
+{name:"橄欖石",keyword:"療癒 · 釋放",text:"不要把悲傷藏在心裡，讓它流動、釋放。橄欖石溫柔地療癒你。",emoji:"✦",gradient:"linear-gradient(135deg,#f1f8e9 0%,#aed581 100%)"},
+{name:"紅瑪瑙",keyword:"穩定 · 踏實",text:"一步一步來，不急不躁。紅瑪瑙幫你建立穩定而踏實的生活節奏。",emoji:"●",gradient:"linear-gradient(135deg,#fbe9e7 0%,#ef9a9a 100%)"},
+{name:"紅瑪瑙",keyword:"勇氣 · 力量",text:"你比你想像的更勇敢。紅瑪瑙為你注入面對挑戰的力量。",emoji:"●",gradient:"linear-gradient(135deg,#fbe9e7 0%,#ef9a9a 100%)"},
+{name:"紅瑪瑙",keyword:"安全 · 歸屬",text:"不管外面的世界如何紛擾，你的內心永遠有一個溫暖的家。",emoji:"●",gradient:"linear-gradient(135deg,#fbe9e7 0%,#ef9a9a 100%)"},
+{name:"紅瑪瑙",keyword:"活力 · 動力",text:"每天早晨都是一個全新的開始，帶著活力迎接每一天。",emoji:"●",gradient:"linear-gradient(135deg,#fbe9e7 0%,#ef9a9a 100%)"},
+{name:"天河石",keyword:"真誠 · 溝通",text:"真誠是最好的溝通方式。天河石幫你說出心裡真正想說的話。",emoji:"◇",gradient:"linear-gradient(135deg,#e0f7fa 0%,#4dd0e1 100%)"},
+{name:"天河石",keyword:"運氣 · 勇敢",text:"運氣是給勇敢者的禮物。大膽嘗試，好運自然會降臨。",emoji:"◇",gradient:"linear-gradient(135deg,#e0f7fa 0%,#4dd0e1 100%)"},
+{name:"天河石",keyword:"希望 · 信任",text:"相信好事即將發生。天河石為你打開一扇充滿希望的窗。",emoji:"◇",gradient:"linear-gradient(135deg,#e0f7fa 0%,#4dd0e1 100%)"},
+{name:"天河石",keyword:"和平 · 寬容",text:"與自己和解，與世界和平共處。寬容是給自己最好的禮物。",emoji:"◇",gradient:"linear-gradient(135deg,#e0f7fa 0%,#4dd0e1 100%)"},
+{name:"孔雀石",keyword:"蛻變 · 新生",text:"蝴蝶破繭而出的那一刻最美麗。孔雀石鼓勵你勇敢蛻變。",emoji:"❖",gradient:"linear-gradient(135deg,#e8f5e9 0%,#66bb6a 100%)"},
+{name:"孔雀石",keyword:"守護 · 平安",text:"帶著孔雀石的祝福，願你每一天都平安喜樂。",emoji:"❖",gradient:"linear-gradient(135deg,#e8f5e9 0%,#66bb6a 100%)"},
+{name:"孔雀石",keyword:"領導 · 自信",text:"你有能力帶領自己走向更好的方向。相信自己的判斷力。",emoji:"❖",gradient:"linear-gradient(135deg,#e8f5e9 0%,#66bb6a 100%)"},
+{name:"孔雀石",keyword:"冒險 · 探索",text:"人生就是一場冒險。不要害怕未知，最美的風景往往在路的盡頭。",emoji:"❖",gradient:"linear-gradient(135deg,#e8f5e9 0%,#66bb6a 100%)"},
+{name:"舒俱徠石",keyword:"靈性 · 慈悲",text:"用慈悲的心看世界，你會發現處處都是善意。",emoji:"♦",gradient:"linear-gradient(135deg,#f3e5f5 0%,#ab47bc 100%)"},
+{name:"舒俱徠石",keyword:"治癒 · 寬恕",text:"寬恕不是為了別人，是為了讓自己的心自由。",emoji:"♦",gradient:"linear-gradient(135deg,#f3e5f5 0%,#ab47bc 100%)"},
+{name:"舒俱徠石",keyword:"提升 · 覺醒",text:"每一天都比昨天更好一點點。微小的進步也是了不起的成長。",emoji:"♦",gradient:"linear-gradient(135deg,#f3e5f5 0%,#ab47bc 100%)"},
+{name:"舒俱徠石",keyword:"保護 · 安心",text:"在紛亂的世界中守住內心的平靜，你就是自己最好的守護者。",emoji:"♦",gradient:"linear-gradient(135deg,#f3e5f5 0%,#ab47bc 100%)"},
+{name:"紅紋石",keyword:"熱情 · 勇氣",text:"帶著熱情去生活，帶著勇氣去追夢。紅紋石點燃你心中的火焰。",emoji:"♥",gradient:"linear-gradient(135deg,#fce4ec 0%,#ef5350 100%)"},
+{name:"紅紋石",keyword:"療傷 · 重建",text:"心碎過後，你會變得更堅強。紅紋石陪你重建一顆更美的心。",emoji:"♥",gradient:"linear-gradient(135deg,#fce4ec 0%,#ef5350 100%)"},
+{name:"紅紋石",keyword:"快樂 · 童心",text:"保持一顆孩子般的心，讓快樂成為生活的主旋律。",emoji:"♥",gradient:"linear-gradient(135deg,#fce4ec 0%,#ef5350 100%)"},
+{name:"紅紋石",keyword:"情感 · 流動",text:"不要壓抑自己的情感，讓它自然流動。每一種感受都有它存在的意義。",emoji:"♥",gradient:"linear-gradient(135deg,#fce4ec 0%,#ef5350 100%)"},
+{name:"東菱石",keyword:"機會 · 幸運",text:"幸運之門為樂觀的人敞開。東菱石帶你發現生活中的每一個好機會。",emoji:"✦",gradient:"linear-gradient(135deg,#e8f5e9 0%,#81c784 100%)"},
+{name:"東菱石",keyword:"冒險 · 開創",text:"敢於走沒人走過的路，你就是自己的開拓者。",emoji:"✦",gradient:"linear-gradient(135deg,#e8f5e9 0%,#81c784 100%)"},
+{name:"東菱石",keyword:"繁榮 · 富足",text:"內心富足的人，外在也會豐盛。東菱石祝福你的生活越來越好。",emoji:"✦",gradient:"linear-gradient(135deg,#e8f5e9 0%,#81c784 100%)"},
+{name:"東菱石",keyword:"決心 · 堅定",text:"一旦下定決心，就全力以赴。東菱石支持你堅定不移地走下去。",emoji:"✦",gradient:"linear-gradient(135deg,#e8f5e9 0%,#81c784 100%)"},
+{name:"藍紋瑪瑙",keyword:"寧靜 · 安撫",text:"在忙碌的生活中為自己按下暫停鍵。藍紋瑪瑙讓你的心安靜下來。",emoji:"◇",gradient:"linear-gradient(135deg,#e3f2fd 0%,#90caf9 100%)"},
+{name:"藍紋瑪瑙",keyword:"表達 · 理解",text:"好好聆聽，好好表達。每一次真心的對話都是一座橋樑。",emoji:"◇",gradient:"linear-gradient(135deg,#e3f2fd 0%,#90caf9 100%)"},
+{name:"藍紋瑪瑙",keyword:"信任 · 支持",text:"信任自己，也信任這個世界。你並不孤單，總有人在默默支持你。",emoji:"◇",gradient:"linear-gradient(135deg,#e3f2fd 0%,#90caf9 100%)"},
+{name:"藍紋瑪瑙",keyword:"冷靜 · 智慧",text:"衝動之前先深呼吸。冷靜下來，智慧的答案就在那裡。",emoji:"◇",gradient:"linear-gradient(135deg,#e3f2fd 0%,#90caf9 100%)"},
+{name:"太陽石",keyword:"陽光 · 快樂",text:"做自己的太陽，照亮自己，也溫暖別人。太陽石讓你散發正能量。",emoji:"✦",gradient:"linear-gradient(135deg,#fff3e0 0%,#ffb74d 100%)"},
+{name:"太陽石",keyword:"領導 · 魅力",text:"自信是最好的魅力。太陽石幫你展現領袖的光芒。",emoji:"✦",gradient:"linear-gradient(135deg,#fff3e0 0%,#ffb74d 100%)"},
+{name:"太陽石",keyword:"獨立 · 自由",text:"你不需要依賴任何人來獲得快樂。太陽石教你成為自己的光。",emoji:"✦",gradient:"linear-gradient(135deg,#fff3e0 0%,#ffb74d 100%)"},
+{name:"太陽石",keyword:"創造 · 靈感",text:"靈感像陽光一樣無處不在。打開心扉，讓創造力自由流動。",emoji:"✦",gradient:"linear-gradient(135deg,#fff3e0 0%,#ffb74d 100%)"},
+{name:"黑碧璽",keyword:"淨化 · 保護",text:"為自己建立一道能量防護罩。黑碧璽幫你擋住所有的負面能量。",emoji:"●",gradient:"linear-gradient(135deg,#424242 0%,#212121 100%)"},
+{name:"黑碧璽",keyword:"力量 · 界線",text:"學會說不，是愛自己的表現。黑碧璽幫你守住自己的界線。",emoji:"●",gradient:"linear-gradient(135deg,#424242 0%,#212121 100%)"},
+{name:"黑碧璽",keyword:"轉化 · 重生",text:"把每一次困難轉化為成長的養分。黑碧璽陪你化腐朽為神奇。",emoji:"●",gradient:"linear-gradient(135deg,#424242 0%,#212121 100%)"},
+{name:"黑碧璽",keyword:"落地 · 扎根",text:"穩穩地扎根，才能高高地成長。黑碧璽讓你站得更穩、走得更遠。",emoji:"●",gradient:"linear-gradient(135deg,#424242 0%,#212121 100%)"},
+{name:"鈦晶",keyword:"能量 · 爆發",text:"你體內蘊藏著驚人的潛能。鈦晶幫你釋放內在的超級能量。",emoji:"✧",gradient:"linear-gradient(135deg,#fff8e1 0%,#ffd54f 100%)"},
+{name:"鈦晶",keyword:"領袖 · 權威",text:"真正的領袖不是控制別人，而是激勵他人一起成長。",emoji:"✧",gradient:"linear-gradient(135deg,#fff8e1 0%,#ffd54f 100%)"},
+{name:"鈦晶",keyword:"決心 · 突破",text:"沒有什麼能阻擋一顆堅定的心。鈦晶給你打破一切限制的力量。",emoji:"✧",gradient:"linear-gradient(135deg,#fff8e1 0%,#ffd54f 100%)"},
+{name:"鈦晶",keyword:"財運 · 事業",text:"你的才華值得被看見和回報。鈦晶祝福你事業順利、財運亨通。",emoji:"✧",gradient:"linear-gradient(135deg,#fff8e1 0%,#ffd54f 100%)"},
+{name:"珍珠",keyword:"優雅 · 從容",text:"真正的美來自內心的從容。像珍珠一樣，經過歲月的淬煉愈發光彩。",emoji:"○",gradient:"linear-gradient(135deg,#fafafa 0%,#e0e0e0 100%)"},
+{name:"珍珠",keyword:"純潔 · 真誠",text:"真誠待人，純潔待己。珍珠提醒你：最簡單的，往往最珍貴。",emoji:"○",gradient:"linear-gradient(135deg,#fafafa 0%,#e0e0e0 100%)"},
+{name:"珍珠",keyword:"耐心 · 醞釀",text:"珍珠用漫長歲月釀出光芒。你的努力也正在醞釀屬於你的璀璨。",emoji:"○",gradient:"linear-gradient(135deg,#fafafa 0%,#e0e0e0 100%)"},
+{name:"珍珠",keyword:"女性 · 力量",text:"溫柔是一種力量。珍珠象徵著柔中帶剛的女性智慧。",emoji:"○",gradient:"linear-gradient(135deg,#fafafa 0%,#e0e0e0 100%)"},
+{name:"翡翠",keyword:"和平 · 長壽",text:"願你平安順遂，健康長壽。翡翠為你送上最真摯的祝福。",emoji:"◆",gradient:"linear-gradient(135deg,#e8f5e9 0%,#4caf50 100%)"},
+{name:"翡翠",keyword:"富貴 · 傳承",text:"最好的財富不是金錢，而是你留給世界的善良和智慧。",emoji:"◆",gradient:"linear-gradient(135deg,#e8f5e9 0%,#4caf50 100%)"},
+{name:"翡翠",keyword:"德行 · 修養",text:"以德服人，以善待世。翡翠提醒你：品格是最高貴的寶石。",emoji:"◆",gradient:"linear-gradient(135deg,#e8f5e9 0%,#4caf50 100%)"},
+{name:"翡翠",keyword:"守護 · 吉祥",text:"帶著翡翠的祝福，願你一切順利，吉祥如意。",emoji:"◆",gradient:"linear-gradient(135deg,#e8f5e9 0%,#4caf50 100%)"},
+{name:"磷灰石",keyword:"動力 · 目標",text:"設定目標，然後全力以赴。磷灰石為你的每一步注入前進的動力。",emoji:"◈",gradient:"linear-gradient(135deg,#e0f7fa 0%,#26c6da 100%)"},
+{name:"磷灰石",keyword:"學習 · 成長",text:"保持學習的熱情，讓自己每天都在進步。磷灰石是你成長路上的好夥伴。",emoji:"◈",gradient:"linear-gradient(135deg,#e0f7fa 0%,#26c6da 100%)"},
+{name:"磷灰石",keyword:"健康 · 活力",text:"身體是夢想的載體。好好照顧自己，才能走得更遠。",emoji:"◈",gradient:"linear-gradient(135deg,#e0f7fa 0%,#26c6da 100%)"},
+{name:"磷灰石",keyword:"啟發 · 創新",text:"突破舊思維，擁抱新觀念。磷灰石幫你打開思想的新大門。",emoji:"◈",gradient:"linear-gradient(135deg,#e0f7fa 0%,#26c6da 100%)"},
+{name:"瑪瑙",keyword:"穩固 · 平衡",text:"生活的美在於平衡。瑪瑙幫你找到工作與生活之間的最佳節奏。",emoji:"◇",gradient:"linear-gradient(135deg,#efebe9 0%,#bcaaa4 100%)"},
+{name:"瑪瑙",keyword:"耐心 · 堅持",text:"好事值得等待。瑪瑙教你用耐心和堅持去迎接每一個美好。",emoji:"◇",gradient:"linear-gradient(135deg,#efebe9 0%,#bcaaa4 100%)"},
+{name:"瑪瑙",keyword:"勇氣 · 信念",text:"相信自己能做到，你就已經成功了一半。瑪瑙為你的信念加油。",emoji:"◇",gradient:"linear-gradient(135deg,#efebe9 0%,#bcaaa4 100%)"},
+{name:"瑪瑙",keyword:"和諧 · 連結",text:"與自然、與他人、與自己建立和諧的連結，生活會變得更加美好。",emoji:"◇",gradient:"linear-gradient(135deg,#efebe9 0%,#bcaaa4 100%)"}
+];
+
+const BACK_BGS=["linear-gradient(145deg,#f8e8ef 0%,#f5dce4 30%,#fdf0f0 60%,#f8e8ef 100%)","linear-gradient(145deg,#fdf0f0 0%,#f5dce4 40%,#f8e8ef 70%,#fef5f5 100%)","linear-gradient(145deg,#f5dce4 0%,#fdf0f0 35%,#f8e8ef 65%,#f5dce4 100%)"];
+
+let currentCards=[];
+let phase="idle";
+
+function pickUnique(arr,n){
+  const s=[...arr].sort(()=>Math.random()-.5);
+  const p=[],u=new Set();
+  for(const c of s){if(u.has(c.name))continue;u.add(c.name);p.push(c);if(p.length>=n)break;}
+  return p.sort(()=>Math.random()-.5);
+}
+
+function createParticles(){
+  const el=document.getElementById("particles");
+  for(let i=0;i<24;i++){
+    const d=document.createElement("div");d.className="particle";
+    const sz=2+Math.random()*4;
+    const colors=["#d4a574","#e8b4c8","#ffffff"];
+    d.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;background:${colors[i%3]};opacity:${.12+Math.random()*.25};--dur:${4+Math.random()*4}s;--delay:${Math.random()*6}s`;
+    el.appendChild(d);
+  }
+}
+
+function renderCards(shuffle){
+  currentCards=pickUnique(CRYSTALS,6);
+  const grid=document.getElementById("cardGrid");
+  grid.innerHTML="";
+  currentCards.forEach((c,i)=>{
+    const card=document.createElement("div");
+    card.className="card-back";
+    card.style.background=BACK_BGS[i%3];
+    card.style.animation=shuffle?`cardShuffle .6s ease ${i*.08}s both`:`cardIdle 3s ease-in-out ${i*.3}s infinite`;
+    card.innerHTML=`<div class="shimmer-layer" style="animation:shimmer 3s ease-in-out ${i*.5}s infinite"></div><div class="inner-border"></div><svg class="card-sparkle" width="16" height="16" viewBox="0 0 12 12"><path d="M6 0L7.2 4.8L12 6L7.2 7.2L6 12L4.8 7.2L0 6L4.8 4.8Z" fill="currentColor"/></svg><div class="card-label">水晶</div>`;
+    card.onclick=()=>pickCard(i);
+    grid.appendChild(card);
+    if(shuffle)setTimeout(()=>{card.style.animation=`cardIdle 3s ease-in-out ${i*.3}s infinite`;},800);
+  });
+}
+
+function pickCard(idx){
+  if(phase!=="idle")return;
+  phase="revealing";
+  const c=currentCards[idx];
+  const isDark=c.name==="黑曜石"||c.name==="黑碧璽";
+  const tc=isDark?"#fff":"#4a3728";
+  const sc=isDark?"rgba(255,255,255,.75)":"#8b7355";
+  const nc=isDark?"#ffd700":"#9b734a";
+  const ab=isDark?"rgba(255,215,0,.2)":"rgba(212,165,116,.3)";
+  const bc=isDark?"rgba(255,215,0,.4)":"rgba(212,165,116,.5)";
+
+  const card=document.getElementById("revealedCard");
+  card.style.background=c.gradient;
+  card.innerHTML=`
+    <div class="shine"></div>
+    <div class="frame" style="border:1.5px solid ${ab}"></div>
+    <div class="content">
+      <div class="tag" style="color:${sc}">── 你的水晶 ──</div>
+      <div class="icon-circle" style="background:${isDark?"rgba(255,215,0,.15)":"rgba(212,165,116,.15)"};border:1px solid ${ab}">
+        <span style="color:${nc}">${c.emoji}</span>
+      </div>
+      <div class="crystal-name" style="color:${nc}">${c.name}</div>
+      <div class="crystal-keyword" style="color:${isDark?"rgba(255,215,0,.7)":"#c9956a"}">${c.keyword}</div>
+      <div class="divider" style="background:${isDark?"rgba(255,215,0,.3)":"rgba(212,165,116,.4)"}"></div>
+      <div class="crystal-text" style="color:${tc}">${c.text}</div>
+      <button class="btn-close" style="border:1.5px solid ${bc};background:${isDark?"rgba(255,215,0,.1)":"rgba(255,255,255,.6)"};color:${nc}" onclick="event.stopPropagation();closeCard()">收下祝福 ✧</button>
+    </div>`;
+
+  const overlay=document.getElementById("overlay");
+  overlay.classList.remove("hidden");
+  phase="revealed";
+}
+
+function closeCard(){
+  document.getElementById("overlay").classList.add("hidden");
+  phase="idle";
+  renderCards(true);
+}
+
+createParticles();
+renderCards(false);
+</script>
+</body>
+</html>
